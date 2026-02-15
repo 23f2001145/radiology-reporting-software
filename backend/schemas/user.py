@@ -1,14 +1,32 @@
 from pydantic import BaseModel, EmailStr
-from typing import List, Optional, Dict
-from datetime import datetime
+from typing import Optional
 
-class User(BaseModel):
+class UserCreate(BaseModel):
     name: str
     email: EmailStr
-    hashed_password: str 
+    password: str
 
 
 class UserUpdate(BaseModel):
     name: Optional[str] = None
     email: Optional[EmailStr]
-    hashed_password: Optional[str]
+    password: Optional[str]
+    
+
+class UserResponse(BaseModel):
+    name: str
+    email: EmailStr
+    is_active: bool
+
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    email: Optional[str] = None
