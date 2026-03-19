@@ -12,7 +12,7 @@ ALGORITHM = "HS256"
 TOKEN_EXPIRES = 30
 
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
 def verify_pass(plain_pass: str, hashed_pass: str) ->bool:
     return pwd_context.verify(plain_pass, hashed_pass)

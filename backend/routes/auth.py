@@ -7,6 +7,7 @@ from schemas.user import UserCreate, UserResponse, Token
 from models.user import User
 from core.security import get_pass_hash, verify_pass, create_access_token, TOKEN_EXPIRES
 from datetime import timedelta
+from auth.dependencies import get_current_active_user
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -55,4 +56,14 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
     return {
         "access_token": access_token,
         "token_type": "bearer"
+    }
+
+
+@router.get("/testing")
+def testing_route(current_user: User = Depends(get_current_active_user)):
+    return {
+        "message": "Authentication successful",
+        "user_email": current_user.email,
+        "user_name": current_user.name,
+        "is_active": current_user.is_active
     }
