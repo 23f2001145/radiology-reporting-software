@@ -19,3 +19,8 @@ def transcribe_report(audio_file: UploadFile = File(...)) -> dict:
             status_code=500,
             detail=str(e)
         )
+
+
+@router.post("/save", status_code=status.HTTP_201_CREATED)
+def save_report(patient_id: int, user_id: int):
+    return "Saved"

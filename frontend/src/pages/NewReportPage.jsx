@@ -1,10 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import transcribeReport from "../services/reportService";
+import getPatients from "../services/patientService";
 
 function NewReportPage() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [rawTranscript, setTranscript] = useState("");
-  const [report, setReport] = useState(null )
+  const [report, setReport] = useState(null);
+  const [patientList, setPatientList] = useState([]);
+  const [selectedPatient, setSelectedPatient] = useState("")
+
+  useEffect(()=>{
+    async function loadPatients(){
+      try {
+        const patients = await getPatients();
+        setPatientList(patients);
+      }
+      catch(error){
+        console.log(error);
+      }
+    }
+    loadPatients();
+  }, []);
 
   function handleFileChange(event){
     setSelectedFile(event.target.files[0]);
@@ -23,8 +39,32 @@ function NewReportPage() {
     }
   }
 
+  async function handleSave(){
+    try {
+      const res = await saveReport();
+      console.log(res.data);
+    }
+    catch(error){
+      console.log(error);
+    }
+    console.log("saved!");
+  }
+
   return (
     <>
+      <label>
+        Select a patient :
+        <select value={selectedPatient} onChange={(e)=>setSelectedPatient(e.target.value)}>
+          <option value="" disabled >--Select a patient--</option>
+          {
+            patientList.map((pt)=>{
+              return (
+                <option value={pt.id} key={pt.id}>{pt.patient_name}</option>
+              )
+            })
+          }         
+        </select>
+      </label>
       <div>
         <h2>New Report</h2>
         <form onSubmit={handleSubmit}>
@@ -35,18 +75,7 @@ function NewReportPage() {
       </div>
       <div>
         <h1>Structured Report</h1>
-        <h3>Clinical history</h3>
-        <textarea
-          value={report?.clinical_history ?? ""}
-          onChange={
-            (e)=>{
-              setReport({
-                ...report,
-                clinical_history:e.target.value
-              });
-            }
-          }
-        ></textarea>
+        
         <h3>Findings</h3>
         <textarea
           value={report?.findings ?? ""}
@@ -59,6 +88,7 @@ function NewReportPage() {
             }
           }
         ></textarea>
+
         <h3>Impression</h3>
         <textarea
           value={report?.impression ?? ""}
@@ -71,19 +101,20 @@ function NewReportPage() {
             }
           }
         ></textarea>
-        <h3>Technique</h3>
+        
+        <h3>Advice</h3>
         <textarea
-          value={report?.technique ?? ""}
+          value={report?.advice ?? ""}
           onChange={
             (e)=>{
               setReport({
                 ...report,
-                technique:e.target.value
+                advice:e.target.value
               });
-              console.log(report);
             }
           }
         ></textarea>
+        <button onClick={handleSave}>Save Report</button>
       </div>
       <div>
         <h3>Raw transcript</h3>
