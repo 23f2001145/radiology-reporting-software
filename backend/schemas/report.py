@@ -1,11 +1,9 @@
 from pydantic import BaseModel
-import enum
+from schemas.report_section import ReportSectionCreate
+from models.report import ReportStatus
 
-class ReportStatus(enum.Enum):
-    draft = "draft"
-    finalized = "finalized"
-
-class CreateReport(BaseModel):
+class ReportCreate(BaseModel):
     patient_id: int
-    template: int
+    template_id: int
     status: ReportStatus
+    sections: list[ReportSectionCreate]

@@ -1,11 +1,11 @@
 from pydantic import BaseModel
-from enum import Enum
+from models.report_section import SectionType
 
-class SectionType(Enum):
-    findings = "findings"
-    impression = "impression"
-    advice = "advice"
-
-class UpdateSection:
-    section_type: str
+class UpdateSection(BaseModel):
+    section_type: SectionType
     content: str
+
+class ReportSectionCreate(BaseModel):
+    section_type: SectionType
+    content: str
+

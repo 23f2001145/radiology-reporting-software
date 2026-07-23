@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
-import transcribeReport from "../services/reportService";
+import { transcribeReport, saveReport } from "../services/reportService";
 import getPatients from "../services/patientService";
+import { useNavigate } from "react-router-dom";
+
 
 function NewReportPage() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [rawTranscript, setTranscript] = useState("");
   const [report, setReport] = useState(null);
   const [patientList, setPatientList] = useState([]);
-  const [selectedPatient, setSelectedPatient] = useState("")
+  const [selectedPatient, setSelectedPatient] = useState("");
+const navigate = useNavigate();
 
   useEffect(()=>{
     async function loadPatients(){
@@ -40,14 +43,44 @@ function NewReportPage() {
   }
 
   async function handleSave(){
+    if (!report) {
+      alert("Generate a report first.");
+      return;
+    }
+
+    if (!selectedPatient) {
+      alert("Please select a patient.");
+      return;
+    }
     try {
-      const res = await saveReport();
-      console.log(res.data);
+      const payload = {
+        patient_id: Number(selectedPatient),
+        template_id: 1,
+        status: "draft",
+        sections: [
+          {
+            section_type: "findings",
+            content: report.findings,
+          },
+          {
+            section_type: "impression",
+            content: report.impression,
+          },
+          {
+            section_type: "advice",
+            content: report.advice,
+          },
+        ],
+      };
+
+      const res = await saveReport(payload);
+      console.log(res);
+      alert("Report saved successfully!");
+      navigate("/dashboard");
     }
     catch(error){
       console.log(error);
     }
-    console.log("saved!");
   }
 
   return (
@@ -73,55 +106,59 @@ function NewReportPage() {
           <input type="submit" value="Generate report"></input>
         </form>
       </div>
-      <div>
-        <h1>Structured Report</h1>
-        
-        <h3>Findings</h3>
-        <textarea
-          value={report?.findings ?? ""}
-          onChange={
-            (e)=>{
-              setReport({
-                ...report,
-                findings:e.target.value
-              });
-            }
-          }
-        ></textarea>
-
-        <h3>Impression</h3>
-        <textarea
-          value={report?.impression ?? ""}
-          onChange={
-            (e)=>{
-              setReport({
-                ...report,
-                impression:e.target.value
-              });
-            }
-          }
-        ></textarea>
-        
-        <h3>Advice</h3>
-        <textarea
-          value={report?.advice ?? ""}
-          onChange={
-            (e)=>{
-              setReport({
-                ...report,
-                advice:e.target.value
-              });
-            }
-          }
-        ></textarea>
-        <button onClick={handleSave}>Save Report</button>
-      </div>
-      <div>
-        <h3>Raw transcript</h3>
+      {report && (
         <div>
-          {rawTranscript}
+          <div>
+          <h1>Structured Report</h1>
+          
+          <h3>Findings</h3>
+          <textarea
+            value={report.findings ?? ""}
+            onChange={
+              (e)=>{
+                setReport({
+                  ...report,
+                  findings:e.target.value
+                });
+              }
+            }
+          ></textarea>
+
+          <h3>Impression</h3>
+          <textarea
+            value={report.impression ?? ""}
+            onChange={
+              (e)=>{
+                setReport({
+                  ...report,
+                  impression:e.target.value
+                });
+              }
+            }
+          ></textarea>
+          
+          <h3>Advice</h3>
+          <textarea
+            value={report.advice ?? ""}
+            onChange={
+              (e)=>{
+                setReport({
+                  ...report,
+                  advice:e.target.value
+                });
+              }
+            }
+          ></textarea>
+          <button onClick={handleSave}>Save Report</button>
+        </div>
+        <div>
+          <h3>Raw transcript</h3>
+          <div>
+            {rawTranscript}
+          </div>
         </div>
       </div>
+      )}
     </>
   );
 }

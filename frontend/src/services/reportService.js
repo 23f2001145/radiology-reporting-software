@@ -1,6 +1,6 @@
 import api from "../api/axios"
 
-async function transcribeReport(selectedFile){
+export async function transcribeReport(selectedFile){
     const formData = new FormData() 
     formData.append("audio_file", selectedFile)
 
@@ -11,4 +11,7 @@ async function transcribeReport(selectedFile){
     return response.data;
 }
 
-export default transcribeReport
+export async function saveReport(reportData) {
+  const response = await api.post("/reports/save", reportData);
+  return response.data;
+}
