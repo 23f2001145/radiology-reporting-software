@@ -35,6 +35,31 @@ def create_patient(patient: PatientCreate, db: Session = Depends(get_db), curren
     return new_patient
 
 
+@router.get("/{patient_id}", response_model=PatientResponse, status_code=status.HTTP_200_OK)
+def get_patient(
+    patient_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    patient = (
+        db.query(Patient)
+        .filter(
+            Patient.id == patient_id,
+            Patient.user_id == current_user.id,
+            Patient.is_active == True,
+        )
+        .first()
+    )
+
+    if patient is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Patient not found",
+        )
+
+    return patient
+
+
 @router.patch("/{patient_id}", response_model=PatientResponse, status_code=status.HTTP_200_OK)
 def update_patient(patient_id : int, patient : PatientUpdate, db : Session = Depends(get_db), current_user : User = Depends(get_current_active_user)):
     

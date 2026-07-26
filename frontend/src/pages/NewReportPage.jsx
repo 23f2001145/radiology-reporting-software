@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { transcribeReport, saveReport } from "../services/reportService";
-import getPatients from "../services/patientService";
+import { getPatients } from "../services/patientService";
 import { useNavigate } from "react-router-dom";
 
 
