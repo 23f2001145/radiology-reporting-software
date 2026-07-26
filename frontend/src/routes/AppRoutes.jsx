@@ -1,8 +1,9 @@
 import { BrowserRouter, Routes, Route} from "react-router-dom"
-import NewReportPage from "../pages/NewReportPage"
 import LoginPage from "../pages/LoginPage"
 import Dashboard from "../pages/Dashboard"
 import ProtectedRoute from "../components/ProtectedRoute"
+import NewReportPage from "../pages/NewReportPage"
+import ReportEditPage from "../pages/ReportEditPage"
 
 function AppRoutes(){
     return (
@@ -16,6 +17,12 @@ function AppRoutes(){
                     <Route path="/report" element={
                         <ProtectedRoute>
                             <NewReportPage />
+                        </ProtectedRoute>
+                    }></Route>
+
+                    <Route path="/report/:reportId" element={
+                        <ProtectedRoute>
+                            <ReportEditPage />
                         </ProtectedRoute>
                     }></Route>
 

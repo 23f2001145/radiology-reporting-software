@@ -12,7 +12,7 @@ function LoginPage(){
         event.preventDefault();
         try{
             await login(email, password)
-            navigate('/report') 
+            navigate('/dashboard') 
         }
         catch(error) {
             console.error(error);

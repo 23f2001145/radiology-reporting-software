@@ -50,7 +50,7 @@ def update_patient(patient_id : int, patient : PatientUpdate, db : Session = Dep
             detail="Date of birth cannot be in the future"
         )
     
-    existing_patient = db.query(Patient).filter(Patient.id == patient_id, Patient.user_id == current_user.id).first()
+    existing_patient = db.query(Patient).filter(Patient.id == patient_id, Patient.user_id == current_user.id, Patient.is_active == True).first()
 
     if not existing_patient:
         raise HTTPException(
@@ -72,23 +72,24 @@ def update_patient(patient_id : int, patient : PatientUpdate, db : Session = Dep
     return existing_patient
 
 
-@router.delete("/{patient_id}", status_code=status.HTTP_200_OK)
-def delete_patient(patient_id : int, db : Session = Depends(get_db), current_user : User = Depends(get_current_active_user)):
-    patient = db.query(Patient).filter(Patient.id == patient_id, Patient.user_id == current_user.id).first()
+@router.patch("/{patient_id}/deactivate", status_code=status.HTTP_200_OK)
+def deactivate_patient(patient_id : int, db : Session = Depends(get_db), current_user : User = Depends(get_current_active_user)):
+    patient = db.query(Patient).filter(Patient.id == patient_id, Patient.user_id == current_user.id, Patient.is_active == True).first()
 
     if not patient:
         raise HTTPException(
             status_code=404,
             detail="No such patient found"
         )
-    
-    db.delete(patient)
+
+    patient.is_active = False
+    # db.delete(patient)
     db.commit()
 
-    return {"msg": "Successfully deleted patient"}
+    return {"msg": "Patient deactivated successfully"}
 
 @router.get("/", response_model=list[PatientResponse], status_code=status.HTTP_200_OK)
 def list_all_patients(db : Session = Depends(get_db), current_user : User = Depends(get_current_active_user)):
-    patients = db.query(Patient).filter(Patient.user_id == current_user.id).all()
+    patients = db.query(Patient).filter(Patient.user_id == current_user.id,  Patient.is_active == True).all()
     
     return patients

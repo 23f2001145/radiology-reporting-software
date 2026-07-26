@@ -1,4 +1,4 @@
-from sqlalchemy import String, Integer, DateTime, func, ForeignKey, Date, Enum as SQLEnum
+from sqlalchemy import String, Integer, Boolean, DateTime, func, ForeignKey, Date, Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import List
 from datetime import date
@@ -17,6 +17,7 @@ class Patient(Base):
     patient_name: Mapped[str] = mapped_column(String, index=True, nullable=False)
     dob: Mapped[date] = mapped_column(Date, nullable=False)
     gender: Mapped[Gender] = mapped_column(SQLEnum(Gender), nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False, server_default="true",)
     creation_time: Mapped[DateTime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),

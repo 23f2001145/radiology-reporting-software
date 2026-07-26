@@ -9,3 +9,6 @@ class ReportSectionCreate(BaseModel):
     section_type: SectionType
     content: str
 
+class ReportSectionResponse(BaseModel):
+    section_type: SectionType
+    content: str
